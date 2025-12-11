@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lora_app/pages/UIHelpers.dart';
+import 'package:lora_app/pages/players.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -6,23 +8,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 35,
-        title: Text(
-          'Lora App',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.bold
-          )
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-      ),
+      appBar: UIHelpers.buildGameAppBar('Lora app'),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Players())
+            );
           },
           style: ElevatedButton.styleFrom(
             padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
