@@ -11,12 +11,14 @@ class Rules extends StatelessWidget {
     return Scaffold(
       appBar: UIHelpers.buildGameAppBar("How to play"),
       body: Padding(
-        padding: EdgeInsets.all(6),
+        padding: EdgeInsets.only(bottom: 30),
         child: Markdown(
           data: UIHelpers.howToPlay,
           styleSheet: MarkdownStyleSheet(
-            p: GoogleFonts.openSans(fontSize: 14),
-            strong: GoogleFonts.openSans(fontSize: 16, fontWeight: FontWeight.bold)
+            p: GoogleFonts.openSans(fontSize: 16),
+            strong: GoogleFonts.openSans(fontWeight: FontWeight.bold),
+            h1: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold),
+            h2: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold)
           ),
         )
       ),
