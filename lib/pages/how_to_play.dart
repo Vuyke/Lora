@@ -8,20 +8,50 @@ class Rules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final markdownStyle = MarkdownStyleSheet(
+      p: GoogleFonts.openSans(fontSize: 16),
+      strong: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
+      em: GoogleFonts.openSans(fontStyle: FontStyle.italic, fontSize: 16),
+      h1: GoogleFonts.openSans(fontSize: 22, fontWeight: FontWeight.bold),
+      h2: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold),
+      h3: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold),
+      listBullet: GoogleFonts.openSans(fontSize: 16),
+      blockSpacing: 8,
+      listIndent: 24,
+    );
+
     return Scaffold(
-      appBar: UIHelpers.buildGameAppBar("How to play"),
-      body: Padding(
-        padding: EdgeInsets.only(bottom: 30),
-        child: Markdown(
-          data: UIHelpers.howToPlay,
-          styleSheet: MarkdownStyleSheet(
-            p: GoogleFonts.openSans(fontSize: 16),
-            strong: GoogleFonts.openSans(fontWeight: FontWeight.bold),
-            h1: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold),
-            h2: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold)
-          ),
-        )
+      appBar: AppBar(
+        title: const Text("How to Play"),
+      ),
+      body: ListView(
+        children: UIHelpers.howToPlay.map((section) {
+          final formattedText = "\n${section.text.trim()}";
+          return ExpansionTile(
+            title: Text(
+              section.title,
+              style: GoogleFonts.openSans(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            initiallyExpanded: false,
+            children: [ 
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: MarkdownBody(
+                  data: formattedText,
+                  styleSheet: markdownStyle,
+                  selectable: true,
+                ),
+              ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
 }
+
+
+
