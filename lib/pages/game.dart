@@ -117,7 +117,7 @@ class _GameState extends State<Game> {
                   ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          if (currentPlayer == 3 && options[currentPlayer].length == 0) {
+                          if (currentPlayer == 3 && options[currentPlayer].isEmpty) {
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (context) =>
