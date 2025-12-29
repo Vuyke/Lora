@@ -21,9 +21,7 @@ class Rules extends StatelessWidget {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("How to Play"),
-      ),
+      appBar: UIHelpers.buildGameAppBar('How to Play'),
       body: ListView(
         children: UIHelpers.howToPlay.map((section) {
           final formattedText = "\n${section.text.trim()}";
