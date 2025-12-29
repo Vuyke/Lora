@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/rule_section.dart';
 
 class UIHelpers {
   static AppBar buildGameAppBar(String title) {
     return AppBar(
-      toolbarHeight: 35,
+      toolbarHeight: 45,
       title: Text(
           title,
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-          )
+          style: GoogleFonts.openSans(
+            fontSize: 20, 
+            fontWeight: FontWeight.bold, 
+            color: Colors.black)
       ),
       centerTitle: true,
       backgroundColor: Colors.white,
