@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lora_app/pages/UIHelpers.dart';
 import 'package:lora_app/pages/players.dart';
+
+import 'scaffold_custom.dart';
 
 class FinishScreen extends StatelessWidget {
   final List<MapEntry<String, int>> players;
@@ -10,8 +11,8 @@ class FinishScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: UIHelpers.buildGameAppBar("Game finished"),
+    return ScaffoldCustom(
+      title: "Game finished",
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

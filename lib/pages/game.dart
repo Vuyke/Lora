@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 
-import 'UIHelpers.dart';
+import 'scaffold_custom.dart';
 
 class Game extends StatefulWidget {
   final List<String> playerNames;
@@ -23,8 +21,8 @@ class _GameState extends State<Game> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: UIHelpers.buildGameAppBar('Game'),
+    return ScaffoldCustom(
+      title: 'Game',
       body: ListView(
         padding: EdgeInsets.all(12),
         children: [

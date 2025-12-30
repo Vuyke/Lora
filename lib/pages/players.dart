@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lora_app/pages/UIHelpers.dart';
+import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/game.dart';
 
 class Players extends StatefulWidget {
@@ -23,8 +23,8 @@ class _PlayersState extends State<Players> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: UIHelpers.buildGameAppBar('Add Players'),
+    return ScaffoldCustom(
+      title: 'Add Players',
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
