@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lora_app/pages/UIHelpers.dart';
+import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/how_to_play.dart';
 import 'package:lora_app/pages/players.dart';
 
@@ -9,8 +9,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: UIHelpers.buildGameAppBar('Lora app'),
+    return ScaffoldCustom(
+      title: 'Lora app',
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

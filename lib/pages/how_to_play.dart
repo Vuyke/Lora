@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lora_app/pages/UIHelpers.dart';
+import 'package:lora_app/pages/scaffold_custom.dart';
+import 'package:lora_app/pages/ui_helpers.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -20,8 +21,8 @@ class Rules extends StatelessWidget {
       listIndent: 24,
     );
 
-    return Scaffold(
-      appBar: UIHelpers.buildGameAppBar('How to Play'),
+    return ScaffoldCustom(
+      title: 'How to Play',
       body: ListView(
         children: UIHelpers.howToPlay.map((section) {
           final formattedText = "\n${section.text.trim()}";
