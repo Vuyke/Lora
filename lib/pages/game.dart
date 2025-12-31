@@ -34,7 +34,10 @@ class _GameState extends State<Game> {
 
           ...List.generate(widget.playerNames.length, (index) {
             return ListTile(
-                title: Text("${widget.playerNames[index]}: ${points[index]}")
+                title: Text(
+                  "${widget.playerNames[index]}: ${points[index]}",
+                  style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                  )
             );
           }),
         ],
@@ -50,13 +53,19 @@ class _GameState extends State<Game> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("${widget.playerNames[currentPlayer]}'s games: "),
+                  Text(
+                    "${widget.playerNames[currentPlayer]}'s games: ",
+                    style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                    ),
                   SizedBox(height: 8),
                   Wrap(
                       spacing: 10,
                       children: List.generate(options[currentPlayer].length, (index) {
                         return ChoiceChip(
-                          label: Text(options[currentPlayer][index]),
+                          label: Text(
+                            options[currentPlayer][index],
+                            style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                            ),
                           selected: selectedGame == index,
                           onSelected: (selected) {
                             setState(() {
@@ -79,7 +88,10 @@ class _GameState extends State<Game> {
                                 currentPhase = !currentPhase;
                               });
                             },
-                            child: Text("Confirm")
+                            child: Text(
+                              "Confirm",
+                              style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                              )
                         )
                       ]
                   )
@@ -161,7 +173,10 @@ class _GameState extends State<Game> {
                               }
                             });
                           },
-                          child: Text("Confirm")
+                          child: Text(
+                            "Confirm",
+                            style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                            )
                       )
                     ]
                   )
@@ -192,6 +207,7 @@ class _GameState extends State<Game> {
           children: [
             Text(
               widget.playerNames[index],
+              style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
             ),
 
             TextField(
