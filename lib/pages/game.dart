@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 
 import 'scaffold_custom.dart';
@@ -13,11 +14,12 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  final List<int> points = List.generate(4, (index) => 0);
+  final List<int> points = [0, 0, 0, 0];
   final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
   final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
   int currentPlayer = 0, selectedGame = -1;
-  bool currentPhase = true;
+  bool currentPhase = true, errorOccurred = false;
+  String errorMessage = "";
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +42,7 @@ class _GameState extends State<Game> {
     );
   }
 
-  Card gameChoosePhase() {
+  Widget gameChoosePhase() {
     return Card(
         elevation: 3,
         child: Padding(
@@ -87,62 +89,97 @@ class _GameState extends State<Game> {
     );
   }
 
-  Card pointsPhase() {
-    return Card(
-      elevation: 3,
-      child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(4, (index) =>
-                      SizedBox(
-                        width: 50,
-                        child: pointsPhaseOnePlayer(index),
-                      ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 8),
-
-              Row(
+  Widget pointsPhase() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Card(
+          elevation: 3,
+          child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Spacer(),
-                  ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          if (currentPlayer == 3 && options[currentPlayer].isEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>
-                                  FinishScreen(players: List.generate(4, (index) => MapEntry(
-                                      widget.playerNames[index], points[index]))
-                                  )
-                              )
-                            );
-                          }
-                          else {
-                            selectedGame = -1;
-                            currentPlayer = (currentPlayer + 1) % 4;
-                            for (int i = 0; i < 4; i++) {
-                              points[i] += int.parse(controllers[i].text);
-                              controllers[i].clear();
-                            }
-                            currentPhase = !currentPhase;
-                          }
-                        });
-                      },
-                      child: Text("Confirm")
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(4, (index) =>
+                          SizedBox(
+                            width: 50,
+                            child: pointsPhaseOnePlayer(index),
+                          ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Spacer(),
+                      ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              errorOccurred = false;
+                              List<int> newPoints = [0, 0, 0, 0];
+                              for (int i = 0; i < 4; i++) {
+                                int? tmp = int.tryParse(controllers[i].text);
+                                if (controllers[i].text.isEmpty) {
+                                  tmp = 0;
+                                }
+                                if (tmp == null) {
+                                  errorMessage = "Error: values must be digits";
+                                  errorOccurred = true;
+                                }
+                                else {
+                                  newPoints[i] = tmp;
+                                }
+                                controllers[i].clear();
+                              }
+                              if (errorOccurred) return;
+
+                              if (!_checkGameRulesApply(newPoints)) {
+                                errorMessage = "Error: points not given properly";
+                                errorOccurred = true;
+                                return;
+                              }
+                              for(int i = 0; i < 4; i++) {
+                                points[i] += newPoints[i];
+                              }
+                              selectedGame = -1;
+                              currentPlayer = (currentPlayer + 1) % 4;
+                              currentPhase = !currentPhase;
+                              if (currentPlayer == 0 && options[currentPlayer].isEmpty) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) =>
+                                        FinishScreen(players: List.generate(4, (index) => MapEntry(
+                                            widget.playerNames[index], points[index]))
+                                        )
+                                    )
+                                );
+                              }
+                            });
+                          },
+                          child: Text("Confirm")
+                      )
+                    ]
                   )
-                ]
+                ],
               )
-            ],
           )
-      )
+        ),
+        Visibility(
+          visible: errorOccurred,
+          child: Padding(
+            padding: EdgeInsetsGeometry.all(10),
+            child: Text(
+              errorMessage,
+              style: GoogleFonts.openSans(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ),
+        )
+      ]
     );
   }
 
@@ -160,11 +197,47 @@ class _GameState extends State<Game> {
             TextField(
               controller: controllers[index],
               keyboardType: TextInputType.number,
-
+              decoration: InputDecoration(hintText: "0", hintStyle: GoogleFonts.openSans(fontWeight: FontWeight.normal)),
             )
           ]
         )
       )
     );
+  }
+
+  bool _checkGameRulesApply(List<int> newPoints) {
+    int sum = newPoints.reduce((a, b) => a + b);
+    List<int> tmpPoints = List<int>.from(newPoints);
+    tmpPoints.sort((a, b) => a - b);
+    switch(selectedGame) {
+      case 0:
+        return _negative8(tmpPoints, sum);
+      case 1:
+        return _positive8(tmpPoints, sum);
+      case 2:
+        return _positive8(tmpPoints, sum) && _allDivisibleBy(tmpPoints, 4);
+      case 3:
+        return (_positive8(tmpPoints, sum) && tmpPoints[3] < 8) || (_negative8(tmpPoints, sum) && tmpPoints[0] == -8);
+      case 4:
+        return _positive8(tmpPoints, sum) && tmpPoints[3] == 8;
+      case 5:
+        return _positive8(tmpPoints, sum) && _allDivisibleBy(tmpPoints, 2);
+      case 6:
+        return tmpPoints[0] == -8 && tmpPoints[1] > 0 && tmpPoints[3] <= 8;
+      default:
+        return true;
+    }
+  }
+
+  bool _allDivisibleBy(List<int> newPoints, int div) {
+    return newPoints.map((x) => x % div == 0).reduce((x, y) => x && y);
+  }
+
+  bool _positive8(List<int> newPoints, int sum) {
+    return sum == 8 && newPoints[0] >= 0;
+  }
+  
+  bool _negative8(List<int> newPoints, int sum) {
+    return sum == -8 && newPoints[3] <= 0;
   }
 }
