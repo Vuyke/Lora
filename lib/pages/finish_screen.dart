@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/players.dart';
+import 'package:lora_app/pages/text_styles.dart';
 
 import 'scaffold_custom.dart';
 
@@ -20,7 +20,7 @@ class FinishScreen extends StatelessWidget {
           children: [
             Text(
               "Winner is: ${winner()}",
-              style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+              style: AppStyle.normalTextStyle
               ),
 
             SizedBox(height: 8),
@@ -31,7 +31,7 @@ class FinishScreen extends StatelessWidget {
                 },
                 child: Text(
                   "Play again",
-                  style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                  style: AppStyle.buttonStyle
                   )
             ),
 
@@ -43,7 +43,7 @@ class FinishScreen extends StatelessWidget {
                 },
                 child: Text(
                   "Exit",
-                  style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                  style: AppStyle.buttonStyle
                   )
             )
           ]

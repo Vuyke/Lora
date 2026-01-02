@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/finish_screen.dart';
+import 'package:lora_app/pages/text_styles.dart';
 
 import 'scaffold_custom.dart';
 
@@ -17,7 +18,7 @@ class _GameState extends State<Game> {
   final List<int> points = [0, 0, 0, 0];
   final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
   final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
-  int currentPlayer = 0, selectedGame = -1;
+  int currentPlayer = 0, selectedGame = -1, currentRound = 1;
   bool currentPhase = true, errorOccurred = false;
   String errorMessage = "";
 
@@ -25,9 +26,14 @@ class _GameState extends State<Game> {
   Widget build(BuildContext context) {
     return ScaffoldCustom(
       title: 'Game',
-      body: ListView(
+      body:
+      ListView(
         padding: EdgeInsets.all(12),
         children: [
+          Text(
+            "Round: $currentRound",
+            style: AppStyle.normalTextStyle
+          ),
           currentPhase ? gameChoosePhase() : pointsPhase(),
 
           SizedBox(height: 20),
@@ -36,7 +42,7 @@ class _GameState extends State<Game> {
             return ListTile(
                 title: Text(
                   "${widget.playerNames[index]}: ${points[index]}",
-                  style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                  style: AppStyle.normalTextStyle
                   )
             );
           }),
@@ -51,11 +57,11 @@ class _GameState extends State<Game> {
         child: Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     "${widget.playerNames[currentPlayer]}'s games: ",
-                    style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                    style: AppStyle.normalTextStyle,
                     ),
                   SizedBox(height: 8),
                   Wrap(
@@ -64,7 +70,7 @@ class _GameState extends State<Game> {
                         return ChoiceChip(
                           label: Text(
                             options[currentPlayer][index],
-                            style: GoogleFonts.openSans(color: Colors.black, fontSize: 18)
+                            style: AppStyle.normalTextStyle
                             ),
                           selected: selectedGame == index,
                           onSelected: (selected) {
@@ -90,7 +96,7 @@ class _GameState extends State<Game> {
                             },
                             child: Text(
                               "Confirm",
-                              style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                              style: AppStyle.buttonStyle
                               )
                         )
                       ]
@@ -103,7 +109,7 @@ class _GameState extends State<Game> {
 
   Widget pointsPhase() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Card(
           elevation: 3,
@@ -161,6 +167,7 @@ class _GameState extends State<Game> {
                               selectedGame = -1;
                               currentPlayer = (currentPlayer + 1) % 4;
                               currentPhase = !currentPhase;
+                              currentRound += 1;
                               if (currentPlayer == 0 && options[currentPlayer].isEmpty) {
                                 Navigator.push(
                                     context,
@@ -175,7 +182,7 @@ class _GameState extends State<Game> {
                           },
                           child: Text(
                             "Confirm",
-                            style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
+                            style: AppStyle.buttonStyle
                             )
                       )
                     ]
@@ -190,7 +197,7 @@ class _GameState extends State<Game> {
             padding: EdgeInsetsGeometry.all(10),
             child: Text(
               errorMessage,
-              style: GoogleFonts.openSans(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold),
+              style: AppStyle.errorMessageStyle,
             ),
           ),
         )

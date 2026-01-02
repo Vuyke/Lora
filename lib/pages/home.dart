@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/how_to_play.dart';
 import 'package:lora_app/pages/players.dart';
+import 'package:lora_app/pages/text_styles.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
       ),
       child: Text(
         name,
-        style: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)
+        style: AppStyle.buttonStyle
       )
     );
   }

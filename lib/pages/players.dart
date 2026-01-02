@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/game.dart';
+import 'package:lora_app/pages/text_styles.dart';
 
 class Players extends StatefulWidget {
   const Players({super.key});
@@ -40,22 +40,19 @@ class _PlayersState extends State<Players> {
                   child: TextFormField(
                     controller: playerControllers[i],
                     cursorColor: Colors.black,
-                    style: GoogleFonts.openSans(color: Colors.black, fontSize: 18),
+                    style: AppStyle.normalTextStyle,
                     decoration: InputDecoration(
                       labelText: 'Player ${i + 1}',
-                      errorStyle: GoogleFonts.openSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      errorStyle: AppStyle.errorMessageStyle,
                       border: const OutlineInputBorder(),
-                      labelStyle: GoogleFonts.openSans(fontSize: 18, fontWeight: FontWeight.bold),
+                      labelStyle: AppStyle.labelStyle,
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.black,
                           width: 2
                         ),
                       ),
-                      floatingLabelStyle: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+                      floatingLabelStyle: AppStyle.floatingLabelStyle,
 
                     ),
                     validator: (value) {
@@ -95,7 +92,7 @@ class _PlayersState extends State<Players> {
                 ),
                 child: Text(
                     'Start Game', 
-                    style: GoogleFonts.openSans(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black)
+                    style: AppStyle.buttonStyle
                 ), 
               ),
             ],
