@@ -38,21 +38,18 @@ class _GameState extends State<Game> {
 
           SizedBox(height: 20),
 
-          Wrap(
-            children: [
-              CheckboxListTile(
-                title: Text(
-                  "Show table",
-                  style: AppStyle.normalTextStyle,
-                ),
-                value: showResults,
-                onChanged: (value) {
-                  setState(() {
-                    showResults = value ?? false;
-                  });
-                }
-              )
-            ] 
+         
+          CheckboxListTile(
+            title: Text(
+              showResults ? "Hide Results" : "Show Results",
+              style: AppStyle.normalTextStyle,
+            ),
+            value: showResults,
+            onChanged: (value) {
+              setState(() {
+                showResults = value ?? false;
+              });
+            }
           ),
 
           Visibility(
