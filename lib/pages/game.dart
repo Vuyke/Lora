@@ -78,58 +78,81 @@ class _GameState extends State<Game> {
 
 
   Widget gameChoosePhase() {
-    return Card(
-        elevation: 3,
-        child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "${widget.playerNames[currentPlayer]}'s games: ",
-                    style: AppStyle.normalTextStyle,
-                    ),
-                  SizedBox(height: 8),
-                  Wrap(
-                      spacing: 10,
-                      children: List.generate(options[currentPlayer].length, (index) {
-                        return ChoiceChip(
-                          label: Text(
-                            options[currentPlayer][index],
-                            style: AppStyle.normalTextStyle
-                            ),
-                          selected: selectedGame == index,
-                          onSelected: (selected) {
-                            setState(() {
-                              selectedGame = index;
-                            });
-                          },
-                        );
-                      })
-                  ),
+    return Column (
+      children: [
+        Card(
+            elevation: 3,
+            child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "${widget.playerNames[currentPlayer]}'s games: ",
+                        style: AppStyle.normalTextStyle,
+                        ),
+                      SizedBox(height: 8),
+                      Wrap(
+                          spacing: 10,
+                          children: List.generate(options[currentPlayer].length, (index) {
+                            return ChoiceChip(
+                              label: Text(
+                                options[currentPlayer][index],
+                                style: AppStyle.normalTextStyle
+                                ),
+                              selected: selectedGame == index,
+                              onSelected: (selected) {
+                                setState(() {
+                                  selectedGame = index;
+                                });
+                              },
+                            );
+                          })
+                      ),
 
-                  SizedBox(height: 20),
+                      SizedBox(height: 20),
 
-                  Row(
-                      children: [
-                        Spacer(),
-                        ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                options[currentPlayer].removeAt(selectedGame);
-                                currentPhase = !currentPhase;
-                              });
-                            },
-                            child: Text(
-                              "Confirm",
-                              style: AppStyle.buttonStyle
-                              )
-                        )
-                      ]
-                  )
-                ]
+                      Row(
+                          children: [
+                            Spacer(),
+                            ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    errorOccurred = false;
+                                    if (selectedGame == -1){
+                                      errorMessage = "Error: no game selected";
+                                      errorOccurred = true;
+                                    }
+                                    else {
+                                    options[currentPlayer].removeAt(selectedGame);
+                                    currentPhase = !currentPhase;
+                                    }
+
+                                    if (errorOccurred) return;
+                                  });
+                                },
+                                child: Text(
+                                  "Confirm",
+                                  style: AppStyle.buttonStyle
+                                  )
+                            )
+                          ]
+                      )
+                    ]
+                )
             )
+        ),
+        Visibility(
+          visible: errorOccurred,
+          child: Padding(
+            padding: EdgeInsetsGeometry.all(10),
+            child: Text(
+              errorMessage,
+              style: AppStyle.errorMessageStyle,
+            ),
+          ),
         )
+      ],
     );
   }
 
