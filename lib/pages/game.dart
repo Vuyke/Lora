@@ -19,7 +19,7 @@ class _GameState extends State<Game> {
   final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
   final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
   int currentPlayer = 0, selectedGame = -1, currentRound = 1;
-  bool currentPhase = true, errorOccurred = false;
+  bool currentPhase = true, errorOccurred = false, showResults = false;
   String errorMessage = "";
 
   @override
@@ -38,18 +38,42 @@ class _GameState extends State<Game> {
 
           SizedBox(height: 20),
 
-          ...List.generate(widget.playerNames.length, (index) {
-            return ListTile(
+          Wrap(
+            children: [
+              CheckboxListTile(
                 title: Text(
-                  "${widget.playerNames[index]}: ${points[index]}",
-                  style: AppStyle.normalTextStyle
-                  )
-            );
-          }),
+                  "Show table",
+                  style: AppStyle.normalTextStyle,
+                ),
+                value: showResults,
+                onChanged: (value) {
+                  setState(() {
+                    showResults = value ?? false;
+                  });
+                }
+              )
+            ] 
+          ),
+
+          Visibility(
+            visible: showResults,
+            child: Column (
+              children: [...List.generate(widget.playerNames.length, (index) {
+                return ListTile(
+                  title: Text(
+                    "${widget.playerNames[index]}: ${points[index]}",
+                    style: AppStyle.normalTextStyle
+                    )
+                  );  
+                }),
+              ]
+            ) 
+          )
         ],
       ),
     );
   }
+
 
   Widget gameChoosePhase() {
     return Card(
@@ -264,3 +288,4 @@ class _GameState extends State<Game> {
     return sum == -8 && newPoints[3] <= 0;
   }
 }
+
