@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 import 'package:lora_app/pages/text_styles.dart';
-
 import 'scaffold_custom.dart';
 
 class Game extends StatefulWidget {
@@ -30,15 +30,18 @@ class _GameState extends State<Game> {
       ListView(
         padding: EdgeInsets.all(12),
         children: [
-          Text(
-            "Round: $currentRound",
-            style: AppStyle.normalTextStyle
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: MarkdownBody(
+              data: "**Round**: $currentRound",
+              styleSheet: AppStyle.markdownStyle
+            ),
           ),
+          
           currentPhase ? gameChoosePhase() : pointsPhase(),
 
           SizedBox(height: 20),
 
-         
           CheckboxListTile(
             title: Text(
               showResults ? "Hide Results" : "Show Results",
@@ -54,17 +57,19 @@ class _GameState extends State<Game> {
 
           Visibility(
             visible: showResults,
-            child: Column (
-              children: [...List.generate(widget.playerNames.length, (index) {
-                return ListTile(
-                  title: Text(
-                    "${widget.playerNames[index]}: ${points[index]}",
-                    style: AppStyle.normalTextStyle
-                    )
-                  );  
-                }),
-              ]
-            ) 
+            child: Card(
+              child:Column (
+                children: [...List.generate(widget.playerNames.length, (index) {
+                  return ListTile(
+                    title: MarkdownBody(
+                      data: "**${widget.playerNames[index]}**: ${points[index]}",
+                      styleSheet: AppStyle.markdownStyle
+                      )
+                    );  
+                  }),
+                ]
+              ) 
+            ), 
           )
         ],
       ),
