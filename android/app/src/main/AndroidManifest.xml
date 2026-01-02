@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="lora_app"
+        android:label="Lorum Tracker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
