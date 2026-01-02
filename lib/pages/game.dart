@@ -20,7 +20,7 @@ class _GameState extends State<Game> {
   final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
   int currentPlayer = 0, selectedGame = -1, currentRound = 1;
   bool currentPhase = true, errorOccurred = false, showResults = false;
-  String errorMessage = "";
+  String errorMessage = "", selectedGameName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +104,7 @@ class _GameState extends State<Game> {
                               onSelected: (selected) {
                                 setState(() {
                                   selectedGame = index;
+                                  selectedGameName = options[currentPlayer][index];
                                 });
                               },
                             );
@@ -167,6 +168,11 @@ class _GameState extends State<Game> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  MarkdownBody(
+                    data: "Player **${widget.playerNames[currentPlayer]}** selected game: **$selectedGameName**",
+                    styleSheet: AppStyle.markdownStyle
+                  ),
+                  SizedBox(height: 12),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
