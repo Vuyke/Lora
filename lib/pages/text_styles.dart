@@ -32,6 +32,12 @@ class AppStyle{
     FontWeight.bold
   );
 
+  static TextStyle titleStyle = GoogleFonts.openSans(
+    color: Colors.black,
+    fontSize: 24,
+    fontWeight: FontWeight.bold
+  );
+
   static final markdownStyle = MarkdownStyleSheet(
       p: GoogleFonts.openSans(fontSize: 16),
       strong: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
