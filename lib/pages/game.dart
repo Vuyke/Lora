@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 import 'package:lora_app/pages/text_styles.dart';
 import 'scaffold_custom.dart';
@@ -33,7 +32,7 @@ class _GameState extends State<Game> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: MarkdownBody(
-              data: "**Round**: $currentRound",
+              data: "**Round**: $currentRound of 28",
               styleSheet: AppStyle.markdownStyle
             ),
           ),
@@ -57,18 +56,23 @@ class _GameState extends State<Game> {
 
           Visibility(
             visible: showResults,
-            child: Card(
-              child:Column (
-                children: [...List.generate(widget.playerNames.length, (index) {
-                  return ListTile(
-                    title: MarkdownBody(
-                      data: "**${widget.playerNames[index]}**: ${points[index]}",
-                      styleSheet: AppStyle.markdownStyle
-                      )
-                    );  
-                  }),
-                ]
-              ) 
+            child: Column(
+              children: [
+                Card(
+                  child: Column (
+                    children: [...List.generate(widget.playerNames.length, (index) {
+                      return ListTile(
+                        title: MarkdownBody(
+                          data: "**${widget.playerNames[index]}**: ${points[index]}",
+                          styleSheet: AppStyle.markdownStyle
+                          )
+                        );  
+                      }),
+                    ]
+                  ) 
+                ),
+                SizedBox(height: 40)
+              ],
             ), 
           )
         ],
@@ -175,18 +179,18 @@ class _GameState extends State<Game> {
                   SizedBox(height: 12),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Row(
+                    child: Column(
                       children: List.generate(4, (index) =>
                           SizedBox(
-                            width: 50,
+                            width: MediaQuery.of(context).size.width * 0.5,
                             child: pointsPhaseOnePlayer(index),
-                          ),
+                        ),
                       ),
                     ),
                   ),
-
+        
                   SizedBox(height: 8),
-
+        
                   Row(
                     children: [
                       Spacer(),
@@ -210,7 +214,7 @@ class _GameState extends State<Game> {
                                 controllers[i].clear();
                               }
                               if (errorOccurred) return;
-
+        
                               if (!_checkGameRulesApply(newPoints)) {
                                 errorMessage = "Error: points not given properly";
                                 errorOccurred = true;
@@ -265,19 +269,18 @@ class _GameState extends State<Game> {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.playerNames[index],
-              style: GoogleFonts.openSans(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)
-            ),
-
-            TextField(
-              controller: controllers[index],
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(hintText: "0", hintStyle: GoogleFonts.openSans(fontWeight: FontWeight.normal)),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                widget.playerNames[index],
+                style: AppStyle.buttonStyle
+              ),
+              TextField(
+                controller: controllers[index],
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(hintText: "0"),
             )
-          ]
+          ],
         )
       )
     );
