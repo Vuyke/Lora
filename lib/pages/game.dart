@@ -32,9 +32,25 @@ class _GameState extends State<Game> {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
-            child: MarkdownBody(
-              data: "**Round**: $currentRound of 28",
-              styleSheet: AppStyle.markdownStyle
+            child: Center(
+              child: Container(
+                height: 40,
+                width: 150,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.black12,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MarkdownBody(
+                      data: "**Round**: $currentRound of 28",
+                      styleSheet: AppStyle.markdownStyle
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
           
@@ -90,21 +106,28 @@ class _GameState extends State<Game> {
             child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         "${widget.playerNames[currentPlayer]}'s games: ",
                         style: AppStyle.normalTextStyle,
                         ),
-                      SizedBox(height: 8),
+                      Text(
+                        "Select a game to play:",
+                        style: AppStyle.subtitleStyle,
+                        ),
+                      SizedBox(height: 20),
                       Wrap(
-                          spacing: 10,
+                          spacing: 5,
                           children: List.generate(options[currentPlayer].length, (index) {
                             return ChoiceChip(
-                              label: Text(
-                                options[currentPlayer][index],
-                                style: AppStyle.normalTextStyle
-                                ),
+                              label: SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.25,
+                                child: Text(
+                                  options[currentPlayer][index],
+                                  style: AppStyle.normalTextStyle
+                                  ),
+                              ),
                               selected: selectedGame == index,
                               onSelected: (selected) {
                                 setState(() {
