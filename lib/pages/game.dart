@@ -16,8 +16,8 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> {
   final List<int> points = [0, 0, 0, 0];
   final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
-  final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
-  // final List<List<String>> options = List.generate(4, (_) => ["Max"]);
+  // final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
+  final List<List<String>> options = List.generate(4, (_) => ["Max"]);
   int currentPlayer = 0, selectedGame = -1, currentRound = 1;
   bool currentPhase = true, errorOccurred = false, showResults = false;
   String errorMessage = "", selectedGameName = "";

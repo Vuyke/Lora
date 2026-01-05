@@ -44,6 +44,17 @@ class AppStyle{
     fontWeight: FontWeight.w600
   );
 
+  static TextStyle winnerTextStyle = GoogleFonts.openSans(
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: FontWeight.bold
+  );
+
+  static TextStyle winnerSubTextStyle = GoogleFonts.openSans(
+    color: Colors.grey,
+    fontSize: 16,
+  );
+
   static final markdownStyle = MarkdownStyleSheet(
       p: GoogleFonts.openSans(fontSize: 16),
       strong: GoogleFonts.openSans(fontWeight: FontWeight.bold, fontSize: 16),
