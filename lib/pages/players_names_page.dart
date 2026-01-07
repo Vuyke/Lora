@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:lora_app/data_class/players.dart';
 import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/game.dart';
 import 'package:lora_app/pages/text_styles.dart';
 
-class Players extends StatefulWidget {
-  const Players({super.key});
+class PlayersNamesPage extends StatefulWidget {
+  const PlayersNamesPage({super.key});
 
   @override
-  State<Players> createState() => _PlayersState();
+  State<PlayersNamesPage> createState() => _PlayersNamesPageState();
 }
 
-class _PlayersState extends State<Players> {
+class _PlayersNamesPageState extends State<PlayersNamesPage> {
   final _formKey = GlobalKey<FormState>();
 
   final List<TextEditingController> playerControllers =
@@ -107,7 +108,7 @@ class _PlayersState extends State<Players> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                                Game(playerNames: names),
+                                Game(players: Players(names: names)),
                           ),
                         );
                       },

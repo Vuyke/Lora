@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lora_app/pages/players.dart';
+import 'package:lora_app/data_class/game_statistics.dart';
+import 'package:lora_app/pages/players_names_page.dart';
 import 'package:lora_app/pages/text_styles.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../data_class/player.dart';
 import 'scaffold_custom.dart';
 
 class FinishScreen extends StatelessWidget {
-  final List<MapEntry<String, int>> players;
+  final GameStatistics stats;
+  final List<MapEntry<Player, int>> players;
 
-  const FinishScreen({super.key, required this.players});
+  FinishScreen({super.key, required this.stats})
+    : players = stats.playerResults();
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +237,7 @@ class FinishScreen extends StatelessWidget {
             SizedBox(height: 24),
             ElevatedButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Players()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => PlayersNamesPage()));
                 },
                 child: Text(
                   "Play again",
@@ -259,11 +263,11 @@ class FinishScreen extends StatelessWidget {
   }
 
   Map<String, int> getPlacements() {
-    players.sort((a, b) => b.value + a.value);
+    players.sort((a, b) => a.value - b.value);
     final Map<String, int> placementMap= {};
 
     for (final player in players) {
-      placementMap[player.key] = player.value;
+      placementMap[player.key.name] = player.value;
     } 
 
     return placementMap;

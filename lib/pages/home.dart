@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lora_app/pages/scaffold_custom.dart';
 import 'package:lora_app/pages/how_to_play.dart';
-import 'package:lora_app/pages/players.dart';
+import 'package:lora_app/pages/players_names_page.dart';
 import 'package:lora_app/pages/text_styles.dart';
 
 class HomePage extends StatelessWidget {
@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            button(Players(), context, 'Start game'),
+            button(PlayersNamesPage(), context, 'Start game'),
             SizedBox(height: 80),
             button(Rules(), context, 'How to Play'),
           ]

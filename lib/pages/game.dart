@@ -1,26 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:lora_app/data_class/game_statistics.dart';
+import 'package:lora_app/data_class/game_type.dart';
+import 'package:lora_app/data_class/players.dart';
+import 'package:lora_app/data_class/points.dart';
+import 'package:lora_app/data_class/round_statistics.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 import 'package:lora_app/pages/text_styles.dart';
 import 'scaffold_custom.dart';
 
 class Game extends StatefulWidget {
-  final List<String> playerNames;
+  final Players players;
 
-  const Game({super.key, required this.playerNames});
+  const Game({super.key, required this.players});
 
   @override
   State<Game> createState() => _GameState();
 }
 
 class _GameState extends State<Game> {
-  final List<int> points = [0, 0, 0, 0];
+  late final GameStatistics stats;
   final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
-  // final List<List<String>> options = List.generate(4, (_) => ["Max", "Min", "Kralj \u2665", "Sva \u2665\u2665", "Žandar \u2663", "Dame", "Lora"]);
-  final List<List<String>> options = List.generate(4, (_) => ["Max"]);
-  int currentPlayer = 0, selectedGame = -1, currentRound = 1;
+  // final List<List<GameType>> options = List.generate(4, (_) => List<GameType>.of(GameType.gameTypes));
+  final List<List<GameType>> options = List.generate(4, (_) => [GameType.gameTypes[0]]);
+  int currentPlayer = 0, currentRound = 1, totalRounds = 0;
+  GameType selectedGame = GameType.none;
   bool currentPhase = true, errorOccurred = false, showResults = false;
-  String errorMessage = "", selectedGameName = "";
+  String errorMessage = "";
+
+  @override
+  void initState() {
+    super.initState();
+    stats = GameStatistics(players: widget.players);
+    totalRounds = options.length * options[0].length;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +58,7 @@ class _GameState extends State<Game> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MarkdownBody(
-                      data: "**Round**: $currentRound of 28",
+                      data: "**Round**: $currentRound of $totalRounds",
                       styleSheet: AppStyle.markdownStyle
                     ),
                   ],
@@ -53,8 +66,23 @@ class _GameState extends State<Game> {
               ),
             ),
           ),
-          
-          currentPhase ? gameChoosePhase() : pointsPhase(),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              currentPhase ? gameChoosePhase() : pointsPhase(),
+              Visibility(
+                visible: errorOccurred,
+                child: Padding(
+                  padding: EdgeInsetsGeometry.all(10),
+                  child: Text(
+                    errorMessage,
+                    style: AppStyle.errorMessageStyle,
+                  ),
+                ),
+              )
+            ]
+          ),
 
           SizedBox(height: 20),
 
@@ -77,10 +105,10 @@ class _GameState extends State<Game> {
               children: [
                 Card(
                   child: Column (
-                    children: [...List.generate(widget.playerNames.length, (index) {
+                    children: [...List.generate(widget.players.length, (index) {
                       return ListTile(
                         title: MarkdownBody(
-                          data: "**${widget.playerNames[index]}**: ${points[index]}",
+                          data: "**${widget.players[index]}**: ${stats.totalPoints[index]}",
                           styleSheet: AppStyle.markdownStyle
                           )
                         );  
@@ -97,170 +125,63 @@ class _GameState extends State<Game> {
     );
   }
 
-
   Widget gameChoosePhase() {
-    return Column (
-      children: [
-        Card(
-            elevation: 3,
-            child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${widget.playerNames[currentPlayer]}'s games: ",
-                        style: AppStyle.normalTextStyle,
-                        ),
-                      Text(
-                        "Select a game to play:",
-                        style: AppStyle.subtitleStyle,
-                        ),
-                      SizedBox(height: 20),
-                      Wrap(
-                          spacing: 5,
-                          children: List.generate(options[currentPlayer].length, (index) {
-                            return ChoiceChip(
-                              label: SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.25,
-                                child: Text(
-                                  options[currentPlayer][index],
-                                  style: AppStyle.normalTextStyle
-                                  ),
-                              ),
-                              selected: selectedGame == index,
-                              onSelected: (selected) {
-                                setState(() {
-                                  selectedGame = index;
-                                  selectedGameName = options[currentPlayer][index];
-                                });
-                              },
-                            );
-                          })
-                      ),
-
-                      SizedBox(height: 20),
-
-                      Row(
-                          children: [
-                            Spacer(),
-                            ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    errorOccurred = false;
-                                    if (selectedGame == -1){
-                                      errorMessage = "Error: no game selected";
-                                      errorOccurred = true;
-                                    }
-                                    else {
-                                    options[currentPlayer].removeAt(selectedGame);
-                                    currentPhase = !currentPhase;
-                                    }
-
-                                    if (errorOccurred) return;
-                                  });
-                                },
-                                child: Text(
-                                  "Confirm",
-                                  style: AppStyle.buttonStyle
-                                  )
-                            )
-                          ]
-                      )
-                    ]
-                )
-            )
-        ),
-        Visibility(
-          visible: errorOccurred,
-          child: Padding(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Text(
-              errorMessage,
-              style: AppStyle.errorMessageStyle,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget pointsPhase() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Card(
-          elevation: 3,
-          child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MarkdownBody(
-                    data: "Player **${widget.playerNames[currentPlayer]}** selected game: **$selectedGameName**",
-                    styleSheet: AppStyle.markdownStyle
+    return Card(
+      elevation: 3,
+      child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${widget.players[currentPlayer]}'s games: ",
+                  style: AppStyle.normalTextStyle,
                   ),
-                  SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: List.generate(4, (index) =>
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.5,
-                            child: pointsPhaseOnePlayer(index),
-                        ),
-                      ),
-                    ),
+                Text(
+                  "Select a game to play:",
+                  style: AppStyle.subtitleStyle,
                   ),
-        
-                  SizedBox(height: 8),
-        
-                  Row(
+                SizedBox(height: 20),
+                Wrap(
+                    spacing: 5,
+                    children: List.generate(options[currentPlayer].length, (index) {
+                      return ChoiceChip(
+                        label: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: Text(
+                            options[currentPlayer][index].name,
+                            style: AppStyle.normalTextStyle
+                            ),
+                        ),
+                        selected: selectedGame == options[currentPlayer][index],
+                        onSelected: (selected) {
+                          setState(() {
+                            selectedGame = options[currentPlayer][index];
+                          });
+                        },
+                      );
+                    })
+                ),
+
+                SizedBox(height: 20),
+
+                Row(
                     children: [
                       Spacer(),
                       ElevatedButton(
                           onPressed: () {
                             setState(() {
                               errorOccurred = false;
-                              List<int> newPoints = [0, 0, 0, 0];
-                              for (int i = 0; i < 4; i++) {
-                                int? tmp = int.tryParse(controllers[i].text);
-                                if (controllers[i].text.isEmpty) {
-                                  tmp = 0;
-                                }
-                                if (tmp == null) {
-                                  errorMessage = "Error: values must be digits";
-                                  errorOccurred = true;
-                                }
-                                else {
-                                  newPoints[i] = tmp;
-                                }
-                                controllers[i].clear();
-                              }
-                              if (errorOccurred) return;
-        
-                              if (!_checkGameRulesApply(newPoints)) {
-                                errorMessage = "Error: points not given properly";
+                              if (selectedGame == GameType.none){
+                                errorMessage = "Error: no game selected";
                                 errorOccurred = true;
-                                return;
                               }
-                              for(int i = 0; i < 4; i++) {
-                                points[i] += newPoints[i];
+                              else {
+                                options[currentPlayer].remove(selectedGame);
+                                currentPhase = !currentPhase;
                               }
-                              selectedGame = -1;
-                              currentPlayer = (currentPlayer + 1) % 4;
-                              currentPhase = !currentPhase;
-                              currentRound += 1;
-                              if (currentPlayer == 0 && options[currentPlayer].isEmpty) {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) =>
-                                        FinishScreen(players: List.generate(4, (index) => MapEntry(
-                                            widget.playerNames[index], points[index]))
-                                        )
-                                    )
-                                );
-                              }
+
+                              if (errorOccurred) return;
                             });
                           },
                           child: Text(
@@ -269,22 +190,95 @@ class _GameState extends State<Game> {
                             )
                       )
                     ]
-                  )
-                ],
-              )
+                )
+              ]
           )
-        ),
-        Visibility(
-          visible: errorOccurred,
-          child: Padding(
-            padding: EdgeInsetsGeometry.all(10),
-            child: Text(
-              errorMessage,
-              style: AppStyle.errorMessageStyle,
-            ),
-          ),
-        )
-      ]
+      )
+    );
+  }
+
+  Widget pointsPhase() {
+    return Card(
+      elevation: 3,
+      child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MarkdownBody(
+                data: "Player **${widget.players[currentPlayer]}** selected game: **${selectedGame.name}**",
+                styleSheet: AppStyle.markdownStyle
+              ),
+              SizedBox(height: 12),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  children: List.generate(4, (index) =>
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.5,
+                        child: pointsPhaseOnePlayer(index),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 8),
+
+              Row(
+                children: [
+                  Spacer(),
+                  ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          errorOccurred = false;
+                          Points newPoints = Points.empty();
+                          for (int i = 0; i < 4; i++) {
+                            int? tmp = int.tryParse(controllers[i].text);
+                            if (controllers[i].text.isEmpty) {
+                              tmp = 0;
+                            }
+                            if (tmp == null) {
+                              errorMessage = "Error: values must be digits";
+                              errorOccurred = true;
+                            }
+                            else {
+                              newPoints[i] = tmp;
+                            }
+                          }
+                          if (errorOccurred) return;
+
+                          if (!newPoints.checkGameRulesApply(selectedGame)) {
+                            errorMessage = "Error: points not given properly";
+                            errorOccurred = true;
+                            return;
+                          }
+                          RoundStatistics roundStatistics =
+                            RoundStatistics(id: selectedGame, points: newPoints, players: stats.players);
+                          stats.addRoundStatistics(roundStatistics);
+                          selectedGame = GameType.none;
+                          currentPlayer = (currentPlayer + 1) % 4;
+                          currentPhase = !currentPhase;
+                          currentRound += 1;
+                          if (currentPlayer == 0 && options[currentPlayer].isEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) =>
+                                FinishScreen(stats: stats)
+                              )
+                            );
+                          }
+                        });
+                      },
+                      child: Text(
+                        "Confirm",
+                        style: AppStyle.buttonStyle
+                      )
+                  )
+                ]
+              )
+            ],
+          )
+      )
     );
   }
 
@@ -296,7 +290,7 @@ class _GameState extends State<Game> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                widget.playerNames[index],
+                widget.players[index].toString(),
                 style: AppStyle.buttonStyle
               ),
               TextField(
@@ -308,42 +302,6 @@ class _GameState extends State<Game> {
         )
       )
     );
-  }
-
-  bool _checkGameRulesApply(List<int> newPoints) {
-    int sum = newPoints.reduce((a, b) => a + b);
-    List<int> tmpPoints = List<int>.from(newPoints);
-    tmpPoints.sort((a, b) => a - b);
-    switch(selectedGame) {
-      case 0:
-        return _negative8(tmpPoints, sum);
-      case 1:
-        return _positive8(tmpPoints, sum);
-      case 2:
-        return _positive8(tmpPoints, sum) && _allDivisibleBy(tmpPoints, 4);
-      case 3:
-        return (_positive8(tmpPoints, sum) && tmpPoints[3] < 8) || (_negative8(tmpPoints, sum) && tmpPoints[0] == -8);
-      case 4:
-        return _positive8(tmpPoints, sum) && tmpPoints[3] == 8;
-      case 5:
-        return _positive8(tmpPoints, sum) && _allDivisibleBy(tmpPoints, 2);
-      case 6:
-        return tmpPoints[0] == -8 && tmpPoints[1] > 0 && tmpPoints[3] <= 8;
-      default:
-        return true;
-    }
-  }
-
-  bool _allDivisibleBy(List<int> newPoints, int div) {
-    return newPoints.map((x) => x % div == 0).reduce((x, y) => x && y);
-  }
-
-  bool _positive8(List<int> newPoints, int sum) {
-    return sum == 8 && newPoints[0] >= 0;
-  }
-  
-  bool _negative8(List<int> newPoints, int sum) {
-    return sum == -8 && newPoints[3] <= 0;
   }
 }
 
