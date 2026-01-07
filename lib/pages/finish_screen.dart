@@ -83,7 +83,6 @@ class FinishScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
-                    // spacing: 8,
                     children: [
                       Text(
                         "2nd Place:",
@@ -99,7 +98,7 @@ class FinishScreen extends StatelessWidget {
                       ClipRRect(
                         child: Container(
                           height: 100,
-                          width: 150,
+                          width: MediaQuery.of(context).size.width * 0.2,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -138,7 +137,7 @@ class FinishScreen extends StatelessWidget {
                       ClipRRect(
                         child: Container(
                           height: 150,
-                          width: 150,
+                          width: MediaQuery.of(context).size.width * 0.2,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -177,7 +176,7 @@ class FinishScreen extends StatelessWidget {
                       ClipRRect(
                         child: Container(
                           height: 75,
-                          width: 150,
+                          width:  MediaQuery.of(context).size.width * 0.2,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -200,7 +199,38 @@ class FinishScreen extends StatelessWidget {
                 ),
               ],
             ),
-
+            SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              width: MediaQuery.of(context).size.width * 0.8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.grey[300],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: MediaQuery.of(context).size.width * 0.1,
+                children: [
+                  Row(
+                    children: [
+                    Text(
+                      "4th Place: ",
+                      style: AppStyle.subtitleStyle
+                    ),
+                    Text(
+                      placements.entries.elementAt(3).key,
+                      style: AppStyle.normalTextStyle
+                    ),
+                  ],
+                ), 
+                    Text(
+                    "${placements.entries.elementAt(3).value} pts",
+                    style: AppStyle.normalTextStyle
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
             ElevatedButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => Players()));
@@ -229,7 +259,7 @@ class FinishScreen extends StatelessWidget {
   }
 
   Map<String, int> getPlacements() {
-    players.sort((a, b) => b.value - a.value);
+    players.sort((a, b) => b.value + a.value);
     final Map<String, int> placementMap= {};
 
     for (final player in players) {
