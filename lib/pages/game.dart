@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:lora_app/data_class/game_statistics.dart';
+import 'package:lora_app/data_class/game_state.dart';
 import 'package:lora_app/data_class/game_type.dart';
 import 'package:lora_app/data_class/players.dart';
 import 'package:lora_app/data_class/points.dart';
-import 'package:lora_app/data_class/round_statistics.dart';
 import 'package:lora_app/pages/finish_screen.dart';
 import 'package:lora_app/pages/text_styles.dart';
 import 'scaffold_custom.dart';
@@ -19,20 +18,15 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> {
-  late final GameStatistics stats;
-  final List<TextEditingController> controllers = List.generate(4, (_) => TextEditingController());
+  final List<int> radioButtonValues = List.filled(4, 0);
+  final List<int> signButtonValues = List.filled(4, 1);
   // final List<List<GameType>> options = List.generate(4, (_) => List<GameType>.of(GameType.gameTypes));
   final List<List<GameType>> options = List.generate(4, (_) => [GameType.gameTypes[0]]);
-  int currentPlayer = 0, currentRound = 1, totalRounds = 0;
-  GameType selectedGame = GameType.none;
-  bool currentPhase = true, errorOccurred = false, showResults = false;
-  String errorMessage = "";
+  late final GameState state = GameState(gameCount: options[0].length, players: widget.players);
 
   @override
   void initState() {
     super.initState();
-    stats = GameStatistics(players: widget.players);
-    totalRounds = options.length * options[0].length;
   }
 
   @override
@@ -58,7 +52,7 @@ class _GameState extends State<Game> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MarkdownBody(
-                      data: "**Round**: $currentRound of $totalRounds",
+                      data: "**Round**: ${state.currentRound} of ${state.totalRounds}",
                       styleSheet: AppStyle.markdownStyle
                     ),
                   ],
@@ -70,13 +64,13 @@ class _GameState extends State<Game> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              currentPhase ? gameChoosePhase() : pointsPhase(),
+              state.getPhase() ? gameChoosePhase() : pointsPhase(),
               Visibility(
-                visible: errorOccurred,
+                visible: state.errorMessage.isNotEmpty,
                 child: Padding(
                   padding: EdgeInsetsGeometry.all(10),
                   child: Text(
-                    errorMessage,
+                    state.errorMessage,
                     style: AppStyle.errorMessageStyle,
                   ),
                 ),
@@ -88,19 +82,19 @@ class _GameState extends State<Game> {
 
           CheckboxListTile(
             title: Text(
-              showResults ? "Hide Results" : "Show Results",
+              state.showResults ? "Hide Results" : "Show Results",
               style: AppStyle.normalTextStyle,
             ),
-            value: showResults,
+            value: state.showResults,
             onChanged: (value) {
               setState(() {
-                showResults = value ?? false;
+                state.showResults = value ?? false;
               });
             }
           ),
 
           Visibility(
-            visible: showResults,
+            visible: state.showResults,
             child: Column(
               children: [
                 Card(
@@ -108,7 +102,7 @@ class _GameState extends State<Game> {
                     children: [...List.generate(widget.players.length, (index) {
                       return ListTile(
                         title: MarkdownBody(
-                          data: "**${widget.players[index]}**: ${stats.totalPoints[index]}",
+                          data: "**${widget.players[index]}**: ${state.stats.totalPoints[index]}",
                           styleSheet: AppStyle.markdownStyle
                           )
                         );  
@@ -134,7 +128,7 @@ class _GameState extends State<Game> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${widget.players[currentPlayer]}'s games: ",
+                  "${widget.players[state.currentPlayer]}'s games: ",
                   style: AppStyle.normalTextStyle,
                   ),
                 Text(
@@ -144,19 +138,19 @@ class _GameState extends State<Game> {
                 SizedBox(height: 20),
                 Wrap(
                     spacing: 5,
-                    children: List.generate(options[currentPlayer].length, (index) {
+                    children: List.generate(options[state.currentPlayer].length, (index) {
                       return ChoiceChip(
                         label: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.25,
                           child: Text(
-                            options[currentPlayer][index].name,
+                            options[state.currentPlayer][index].name,
                             style: AppStyle.normalTextStyle
                             ),
                         ),
-                        selected: selectedGame == options[currentPlayer][index],
+                        selected: state.game == options[state.currentPlayer][index],
                         onSelected: (selected) {
                           setState(() {
-                            selectedGame = options[currentPlayer][index];
+                            state.game = options[state.currentPlayer][index];
                           });
                         },
                       );
@@ -171,17 +165,15 @@ class _GameState extends State<Game> {
                       ElevatedButton(
                           onPressed: () {
                             setState(() {
-                              errorOccurred = false;
-                              if (selectedGame == GameType.none){
-                                errorMessage = "Error: no game selected";
-                                errorOccurred = true;
+                              state.errorMessage = "";
+                              if (state.game == GameType.none){
+                                state.errorMessage = "Error: no game selected";
+                                return;
                               }
                               else {
-                                options[currentPlayer].remove(selectedGame);
-                                currentPhase = !currentPhase;
+                                options[state.currentPlayer].remove(state.game);
+                                state.changePhase();
                               }
-
-                              if (errorOccurred) return;
                             });
                           },
                           child: Text(
@@ -206,7 +198,7 @@ class _GameState extends State<Game> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               MarkdownBody(
-                data: "Player **${widget.players[currentPlayer]}** selected game: **${selectedGame.name}**",
+                data: "Player **${widget.players[state.currentPlayer]}** selected game: **${state.game.name}**",
                 styleSheet: AppStyle.markdownStyle
               ),
               SizedBox(height: 12),
@@ -230,42 +222,20 @@ class _GameState extends State<Game> {
                   ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          errorOccurred = false;
-                          Points newPoints = Points.empty();
+                          Points points = Points.empty();
                           for (int i = 0; i < 4; i++) {
-                            int? tmp = int.tryParse(controllers[i].text);
-                            if (controllers[i].text.isEmpty) {
-                              tmp = 0;
-                            }
-                            if (tmp == null) {
-                              errorMessage = "Error: values must be digits";
-                              errorOccurred = true;
-                            }
-                            else {
-                              newPoints[i] = tmp;
-                            }
+                            points[i] = radioButtonValues[i] * signButtonValues[i];
                           }
-                          if (errorOccurred) return;
-
-                          if (!newPoints.checkGameRulesApply(selectedGame)) {
-                            errorMessage = "Error: points not given properly";
-                            errorOccurred = true;
-                            return;
-                          }
-                          RoundStatistics roundStatistics =
-                            RoundStatistics(id: selectedGame, points: newPoints, players: stats.players);
-                          stats.addRoundStatistics(roundStatistics);
-                          selectedGame = GameType.none;
-                          currentPlayer = (currentPlayer + 1) % 4;
-                          currentPhase = !currentPhase;
-                          currentRound += 1;
-                          if (currentPlayer == 0 && options[currentPlayer].isEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) =>
-                                FinishScreen(stats: stats)
-                              )
-                            );
+                          if(state.finishRound(points)) {
+                            refreshButtonValues();
+                            if (state.isGameFinished()) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) =>
+                                      FinishScreen(state: state)
+                                  )
+                              );
+                            }
                           }
                         });
                       },
@@ -282,7 +252,7 @@ class _GameState extends State<Game> {
     );
   }
 
-  Card pointsPhaseOnePlayer(int index) {
+ Widget pointsPhaseOnePlayer(int index) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -293,15 +263,43 @@ class _GameState extends State<Game> {
                 widget.players[index].toString(),
                 style: AppStyle.buttonStyle
               ),
-              TextField(
-                controller: controllers[index],
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(hintText: "0"),
-            )
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {signButtonValues[index] *= -1;});
+                    },
+                    child: Text(signButtonValues[index] > 0 ? "+" : "-", style: AppStyle.buttonStyle)
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(child:dropDownMenu(index))
+                ],
+              )
           ],
         )
       )
     );
   }
-}
 
+  Widget dropDownMenu(int index) {
+    return DropdownButtonFormField<int>(
+      initialValue: 0,
+      items: List.generate(9, (value) => DropdownMenuItem<int>(
+        value: value,
+        child: Text(value.toString()),
+      )),
+      onChanged: (value) {
+        setState(() {
+          radioButtonValues[index] = value ?? 0;
+        });
+      },
+    );
+  }
+
+  void refreshButtonValues() {
+    for(int i = 0; i < 4; i++) {
+      radioButtonValues[i] = 0;
+      signButtonValues[i] = 1;
+    }
+  }
+}

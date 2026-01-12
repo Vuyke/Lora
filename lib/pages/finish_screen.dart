@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lora_app/data_class/game_statistics.dart';
+import 'package:lora_app/data_class/game_state.dart';
 import 'package:lora_app/pages/players_names_page.dart';
 import 'package:lora_app/pages/text_styles.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,11 +8,11 @@ import '../data_class/player.dart';
 import 'scaffold_custom.dart';
 
 class FinishScreen extends StatelessWidget {
-  final GameStatistics stats;
+  final GameState state;
   final List<MapEntry<Player, int>> players;
 
-  FinishScreen({super.key, required this.stats})
-    : players = stats.playerResults();
+  FinishScreen({super.key, required this.state})
+    : players = state.stats.playerResults();
 
   @override
   Widget build(BuildContext context) {
